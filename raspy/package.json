@@ -1,0 +1,16 @@
+{
+  "name": "raspy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ListenCommands.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "azure-iot-device": "^1.8.3",
+    "azure-iot-device-mqtt": "^1.8.3",
+    "azure-iothub": "^1.8.3"
+  }
+}
