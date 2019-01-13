@@ -99,8 +99,6 @@ var connectCallback = function (err) {
     }
 }
 
-console.log('Board connected...');
-
 // *********************************************
 // Open the connection to Azure IoT Hubs and
 // begin sending messages.
