@@ -1,6 +1,7 @@
 var express = require('express')
 const basicAuth = require('express-basic-auth')
 var senderCommands = require('./sendCommands')
+var fs = require('fs')
 
 // Create a server object
 var app=express();
@@ -20,8 +21,15 @@ function getUnauthorizedResponse(req) {
 }
 
 // ROUTING
-app.get('/',function(req,res){
-    res.sendFile('index.html', { root: __dirname });
+app.get('*',function(req,res){
+    let path = __dirname + '/public/' + req.url;
+    fs.access(path, (err) => {
+        if(!err) {
+            res.sendFile(path);
+        } else {
+            res.sendFile(__dirname + '/public/index.html');
+        }
+    })
 });
 
 // API for the front-end form. Use it to send command to a raspberry
