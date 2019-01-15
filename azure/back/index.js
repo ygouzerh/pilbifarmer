@@ -6,7 +6,10 @@ var tediousExpress = require('express4-tedious');
 var bodyParser = require('body-parser');
 // Create a server object
 var app=express();
-
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+})); 
 // AUTHENTIFICATION
 app.use(basicAuth({
     users: { 'farmer': 'Plant360$' },
@@ -39,9 +42,36 @@ app.get('/sendCommand',function(req,res){
 
 app.get('/plantes', function (req, res) {
 
-    req.sql("SELECT * FROM Plante")
+    req.sql("SELECT * FROM Plante for json path")
         .into(res);
 
+});
+
+app.get('/modes', function (req, res) {
+
+    req.sql("SELECT * FROM Mode for json path")
+        .into(res);
+
+});
+
+app.get('/modes/:id', function (req, res) {
+
+    req.sql("SELECT * FROM Mode where planteID = @id for json path, without_array_wrapper")
+    .param('id', req.params.id)
+    .into(res, '{}');
+});
+
+app.post('/modes/:id', function (req, res) {
+    var body = req.body.state;
+    if(body === "on")
+        var state = 1
+    else
+        var state = 0
+    console.log(state)
+    req.sql("UPDATE Mode SET automatique = " + state + "where planteID = @id")
+    .param('id', req.params.id).into(res);
+    
+    
 });
 
 // LISTEN
