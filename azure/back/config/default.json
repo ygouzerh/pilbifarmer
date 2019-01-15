@@ -1,0 +1,8 @@
+{
+    "connection":{
+        "server"  : "dbpilbi3243.database.windows.net",
+        "userName": "farmer",
+        "password": "Plant360$",
+        "options": { "encrypt": true, "database": "dbpilbi3243" }
+    }
+}

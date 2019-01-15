@@ -1,7 +1,9 @@
 var express = require('express')
 const basicAuth = require('express-basic-auth')
 var senderCommands = require('./sendCommands')
-
+var config = require('config')
+var tediousExpress = require('express4-tedious');
+var bodyParser = require('body-parser');
 // Create a server object
 var app=express();
 
@@ -19,6 +21,10 @@ function getUnauthorizedResponse(req) {
         : 'No credentials provided'
 }
 
+app.use(function (req, res, next) {
+    req.sql = tediousExpress(config.get('connection'));
+    next();
+});
 // ROUTING
 app.get('/',function(req,res){
     res.sendFile('index.html', { root: __dirname });
@@ -29,6 +35,13 @@ app.get('/sendCommand',function(req,res){
     console.log("We will send files")
     res.sendFile('index.html', { root: __dirname });
     senderCommands.sendCommand(req.query.rasp, req.query.planteId, req.query.action, req.query.mode, {time: req.query.time})
+});
+
+app.get('/plantes', function (req, res) {
+
+    req.sql("SELECT * FROM Plante")
+        .into(res);
+
 });
 
 // LISTEN
