@@ -12,6 +12,7 @@ app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
+
 // AUTHENTIFICATION
 app.use(basicAuth({
     users: { 'farmer': 'Plant360$' },
@@ -30,19 +31,9 @@ app.use(function (req, res, next) {
     req.sql = tediousExpress(config.get('connection'));
     next();
 });
-// ROUTING
-app.get('*',function(req,res){
-    let path = __dirname + '/public/' + req.url;
-    fs.access(path, (err) => {
-        if(!err) {
-            res.sendFile(path);
-        } else {
-            res.sendFile(__dirname + '/public/index.html');
-        }
-    })
-});
 
-// API for the front-end form. Use it to send command to a raspberry
+// API FOR THE FRONT-END
+// Use it to send command to a raspberry
 app.get('/sendCommand',function(req,res){
     console.log("We will send files")
     res.sendFile('index.html', { root: __dirname });
@@ -53,7 +44,7 @@ app.get('/plantes', function (req, res) {
 
     req.sql("SELECT * FROM Plante for json path")
         .into(res);
-
+        
 });
 
 app.get('/modes', function (req, res) {
@@ -81,6 +72,18 @@ app.post('/modes/:id', function (req, res) {
     .param('id', req.params.id).into(res);
 
 
+});
+
+// AFFICHAGES DES DONNEES STATIQUES
+app.get('*',function(req,res){
+    let path = __dirname + '/public/' + req.url;
+    fs.access(path, (err) => {
+        if(!err) {
+            res.sendFile(path);
+        } else {
+            res.sendFile(__dirname + '/public/index.html');
+        }
+    })
 });
 
 // LISTEN
