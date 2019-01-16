@@ -44,7 +44,7 @@ app.get('/sendCommand',function(req,res){
 
 app.get('/raspy', function (req, res) {
 
-    req.sql("SELECT DISTINCT CAST(raspyID AS VARCHAR(128)) as raspyID FROM Plante for json path")
+    req.sql("SELECT DISTINCT raspyID FROM Plante for json path")
         .into(res);
 
 });
@@ -52,6 +52,14 @@ app.get('/raspy', function (req, res) {
 app.get('/plantes', function (req, res) {
 
     req.sql("SELECT * FROM Plante for json path")
+        .into(res);
+
+});
+
+app.get('/plantes/:raspyID', function (req, res) {
+
+    req.sql("SELECT * FROM Plante where raspyID = @raspyID for json path")
+        .param('raspyID', req.params.raspyID)
         .into(res);
 
 });
@@ -65,9 +73,9 @@ app.get('/modes', function (req, res) {
 
 app.get('/modes/:id', function (req, res) {
 
-    req.sql("SELECT * FROM Mode where planteID = @id for json path, without_array_wrapper")
+    req.sql("SELECT * FROM Mode where planteID = @id for json path")
     .param('id', req.params.id)
-    .into(res, '{}');
+    .into(res);
 });
 
 app.post('/modes/:id', function (req, res) {
@@ -76,8 +84,7 @@ app.post('/modes/:id', function (req, res) {
         var state = 1
     else
         var state = 0
-    console.log(state)
-    req.sql("UPDATE Mode SET automatique = " + state + "where planteID = @id")
+    req.sql("UPDATE Mode SET automatique = " + state + "where planteID = @id and arrosage = " + req.body.arrosage)
     .param('id', req.params.id).into(res);
 });
 

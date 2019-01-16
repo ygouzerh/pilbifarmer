@@ -1,6 +1,6 @@
 
 CREATE TABLE Commande (
-    planteID varchar  NOT NULL ,
+    planteID varchar(80)  NOT NULL ,
     date_heure datetime  NOT NULL ,
     periode int  NOT NULL ,
     commande text  NOT NULL ,
@@ -11,7 +11,7 @@ CREATE TABLE Commande (
 );
 
 CREATE TABLE Mode (
-    planteID varchar  NOT NULL ,
+    planteID varchar(80)  NOT NULL ,
 	arrosage bit NOT NULL,
     automatique bit  NOT NULL ,
     PRIMARY KEY (
@@ -20,8 +20,8 @@ CREATE TABLE Mode (
 );
 
 CREATE TABLE Plante (
-    planteID varchar  NOT NULL ,
-    raspyID text  NOT NULL ,
+    planteID varchar(80)  NOT NULL ,
+    raspyID varchar(80)  NOT NULL ,
     PRIMARY KEY (
         planteID
     )
