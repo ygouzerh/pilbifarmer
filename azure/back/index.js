@@ -44,7 +44,7 @@ app.get('/plantes', function (req, res) {
 
     req.sql("SELECT * FROM Plante for json path")
         .into(res);
-        
+
 });
 
 app.get('/modes', function (req, res) {
@@ -70,8 +70,43 @@ app.post('/modes/:id', function (req, res) {
     console.log(state)
     req.sql("UPDATE Mode SET automatique = " + state + "where planteID = @id")
     .param('id', req.params.id).into(res);
+});
 
+app.get('/commandes/plante/:planteID', function (req, res) {
+    req.sql("SELECT * FROM Commande where planteID = @planteID")
+        .param("planteID", req.params.planteID)
+        .into(res);
+});
 
+app.get('/commandes/perhours', function (req, res) {
+
+    console.log("Zbra");
+    var interval = 5;
+    var instantDate = new Date(Date.now());
+    var dateDebut = new Date(instantDate.getTime() - interval*60000).toISOString();
+    var dateFin = new Date(instantDate.getTime() + interval*60000).toISOString();
+    console.log(instantDate);
+    console.log(dateDebut);
+    console.log(dateFin);
+    req.sql("SELECT * FROM Commande where @dateDebut < date_heure and date_heure < @dateFin")
+        .param("dateDebut", dateDebut)
+        .param("dateFin", dateFin)
+        .into(res);
+});
+
+app.get('/commandes/insert', function (req, res) {
+    // TODO : Debug
+    req.query.planteID = 'plante_id_1';
+    req.query.date = new Date(Date.now()).toISOString;
+    req.query.period = 15;
+    req.query.command = "Arrosage";
+    req.sql("INSERT INTO Commande VALUES(@planteID, @date_heure, @period, @command)")
+        .param("planteID", req.query.planteID)
+        .param("date_heure", req.query.date)
+        .param("period", req.query.period)
+        .param("command", req.query.command)
+        .into(res);
+    res.sendFile(__dirname + '/public/index.html');
 });
 
 // AFFICHAGES DES DONNEES STATIQUES
