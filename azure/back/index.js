@@ -5,6 +5,7 @@ var fs = require('fs')
 var config = require('config')
 var tediousExpress = require('express4-tedious');
 var bodyParser = require('body-parser');
+var cors = require('cors');
 
 // Create a server object
 var app=express();
@@ -13,6 +14,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
+app.use(cors({origin: '*'})); 
 // AUTHENTIFICATION
 app.use(basicAuth({
     users: { 'farmer': 'Plant360$' },
@@ -38,6 +40,13 @@ app.get('/sendCommand',function(req,res){
     console.log("We will send files")
     res.sendFile('index.html', { root: __dirname });
     senderCommands.sendCommand(req.query.rasp, req.query.planteId, req.query.action, req.query.mode, {time: req.query.time})
+});
+
+app.get('/raspy', function (req, res) {
+
+    req.sql("SELECT DISTINCT CAST(raspyID AS VARCHAR(128)) as raspyID FROM Plante for json path")
+        .into(res);
+
 });
 
 app.get('/plantes', function (req, res) {
