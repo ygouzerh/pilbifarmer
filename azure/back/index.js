@@ -7,6 +7,7 @@ var tediousExpress = require('express4-tedious');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 
+const moment = require('moment');
 // Create a server object
 var app=express();
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
@@ -14,7 +15,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
-app.use(cors({origin: '*'})); 
+app.use(cors({origin: '*'}));
 // AUTHENTIFICATION
 app.use(basicAuth({
     users: { 'farmer': 'Plant360$' },
@@ -94,7 +95,7 @@ app.get('/commandes/plante/:planteID', function (req, res) {
         .into(res);
 });
 
-app.get('/commandes/perhours', function (req, res) {
+app.get('/commandes/perhours/:planteID', function (req, res) {
 
     console.log("Zbra");
     var interval = 5;
@@ -104,21 +105,24 @@ app.get('/commandes/perhours', function (req, res) {
     console.log(instantDate);
     console.log(dateDebut);
     console.log(dateFin);
-    req.sql("SELECT * FROM Commande where @dateDebut < date_heure and date_heure < @dateFin")
+    req.sql("SELECT * FROM Commande where @dateDebut < date_heure and date_heure < @dateFin and planteID = @planteID")
         .param("dateDebut", dateDebut)
         .param("dateFin", dateFin)
+        .param("planteID", req.params.planteID)
         .into(res);
 });
 
 app.get('/commandes/insert', function (req, res) {
     // TODO : Debug
-    req.query.planteID = 'plante_id_1';
-    req.query.date = new Date(Date.now()).toISOString;
+    // VALUES PRE STORED
+    req.query.planteID = 'plante3';
+    let dateToday = moment(new Date()).format('YYYY-MM-DD hh:mm');
+    console.log(dateToday);
     req.query.period = 15;
-    req.query.command = "Arrosage";
-    req.sql("INSERT INTO Commande VALUES(@planteID, @date_heure, @period, @command)")
+    req.query.command = 'Arrosage';
+    req.sql("INSERT INTO Commande VALUES(@planteID, @date_heure, @period, @command, 1)")
         .param("planteID", req.query.planteID)
-        .param("date_heure", req.query.date)
+        .param("date_heure", dateToday)
         .param("period", req.query.period)
         .param("command", req.query.command)
         .into(res);

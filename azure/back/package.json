@@ -17,6 +17,7 @@
     "express": "^4.16.4",
     "express-basic-auth": "^1.1.6",
     "express4-tedious": "^0.3.0",
+    "moment": "^2.23.0",
     "tedious": "^4.1.3"
   }
 }
