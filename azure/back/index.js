@@ -37,9 +37,9 @@ app.use(function (req, res, next) {
 
 // API FOR THE FRONT-END
 // Use it to send command to a raspberry
+// API for the front-end form. Use it to send command to a raspberry
 app.get('/sendCommand',function(req,res){
     console.log("We will send files")
-    res.sendFile('index.html', { root: __dirname });
     senderCommands.sendCommand(req.query.rasp, req.query.planteId, req.query.action, req.query.mode, {time: req.query.time})
 });
 
@@ -126,7 +126,6 @@ app.get('/commandes/insert', function (req, res) {
         .param("period", req.query.period)
         .param("command", req.query.command)
         .into(res);
-    res.sendFile(__dirname + '/public/index.html');
 });
 
 // AFFICHAGES DES DONNEES STATIQUES
