@@ -66,9 +66,69 @@ var connectCallback = function (err) {
             console.log('**** Message Received - Id: ' + msg.messageId + ' Body: ' + msg.data);
             console.log('*********************************************');
             console.log('Message : ');
-            console.log(msg);
-            var parsedData = JSON.parse(msg.data);
+            /*
+                We receive this payload
+                var payload = {
+                    planteId: planteId,
+                    action: {
+                        name: actionName,
+                        mode: {
+                            name: modeName,
+                            params: params
+                        }
+                    }
+                }
+            */
+           // TRANSFORM COMMAND INTO A SIMPLER INTEGER CODE TO ARDUINO
+            let parsedData = JSON.parse(msg.data);
             console.log(parsedData);
+            let planteId = parsedData.planteId;
+            let actionNumber;
+            let modeNumber;
+            let timeNumber = 0;
+            let error;
+            // Transform the name of the action into number
+            switch(parsedData.action.name){
+                case 'light':
+                    console.log("light");
+                    actionNumber = 1;
+                    break;
+                case 'water':
+                    actionNumber = 2;
+                    break;
+                default:
+                    error = true;
+                    console.log("Error : Don't recognize the action");
+            }
+            // Transform the mode into number
+            switch(parsedData.action.mode.name){
+                case 'on':
+                    modeNumber = 1;
+                    break;
+                case 'off':
+                    modeNumber = 2;
+                    break;
+                case 'period':
+                    modeNumber = 3;
+                    timeNumber = parseInt(parsedData.action.mode.params.time, 10);                    
+                    if(isNaN(timeNumber)){
+                        console.log("Error : don't find the time parameter for the period mode");
+                        error = true;
+                    }
+                    break;
+                default:
+                    error = true;
+                    console.log("Dont recognize the mode");
+            }
+            // Format the code
+            if(!error){
+                console.log("Time = "+timeNumber+", Mode = "+modeNumber+", actionNumber = "+actionNumber);
+                let codeToSent =  timeNumber*100 + modeNumber*10 + actionNumber ;                
+                console.log("Code to sent : ", codeToSent);
+                // TODO : SENT THE codeToSent TO THE RIGTH planteId
+            } else {
+                console.log("Error : can't send the code because the command is not well formated");
+            }
 
             // *********************************************
             // Process completed messages and remove them
@@ -92,6 +152,7 @@ var connectCallback = function (err) {
         // reconnect.
         // *********************************************
         client.on('disconnect', function () {
+            console.log("disconnection");
             clearInterval(sendInterval);
             client.removeAllListeners();
             client.connect(connectCallback);
