@@ -6,8 +6,10 @@ var config = require('config')
 var tediousExpress = require('express4-tedious');
 var bodyParser = require('body-parser');
 var cors = require('cors');
-
 const moment = require('moment');
+var request = require('request');
+var cron = require('node-cron');
+
 // Create a server object
 var app=express();
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
@@ -16,9 +18,11 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 
 app.use(cors({origin: '*'}));
+
 // AUTHENTIFICATION
+var mdp = 'Plant360$';
 app.use(basicAuth({
-    users: { 'farmer': 'Plant360$' },
+    users: { 'farmer': mdp },
     challenge: true,
     realm: 'PilbiFarming',
     unauthorizedResponse: getUnauthorizedResponse
@@ -39,7 +43,6 @@ app.use(function (req, res, next) {
 // Use it to send command to a raspberry
 // API for the front-end form. Use it to send command to a raspberry
 app.get('/sendCommand',function(req,res){
-    console.log("We will send files")
     senderCommands.sendCommand(req.query.rasp, req.query.planteId, req.query.action, req.query.mode, {time: req.query.time})
 });
 
@@ -73,7 +76,6 @@ app.get('/modes', function (req, res) {
 });
 
 app.get('/modes/:id', function (req, res) {
-
     req.sql("SELECT * FROM Mode where planteID = @id for json path")
     .param('id', req.params.id)
     .into(res);
@@ -95,36 +97,24 @@ app.get('/commandes/plante/:planteID', function (req, res) {
         .into(res);
 });
 
-app.get('/commandes/perhours/:planteID', function (req, res) {
-
-    console.log("Zbra");
-    var interval = 5;
-    var instantDate = new Date(Date.now());
-    var dateDebut = new Date(instantDate.getTime() - interval*60000).toISOString();
-    var dateFin = new Date(instantDate.getTime() + interval*60000).toISOString();
-    console.log(instantDate);
-    console.log(dateDebut);
-    console.log(dateFin);
-    req.sql("SELECT * FROM Commande where @dateDebut < date_heure and date_heure < @dateFin and planteID = @planteID")
+app.get('/commandes/perhours/:planteID/:interval', function (req, res) {    
+    var instantDate = moment();
+    var dateDebut = moment(instantDate).add(-req.params.interval, 'seconds').format('YYYY-MM-DD hh:mm A');
+    var dateFin = moment(instantDate).add(req.params.interval, 'seconds').format('YYYY-MM-DD hh:mm A');    
+    req.sql("SELECT * FROM Commande where @dateDebut < date_heure and date_heure < @dateFin and planteID = @planteID for json path")
         .param("dateDebut", dateDebut)
         .param("dateFin", dateFin)
         .param("planteID", req.params.planteID)
         .into(res);
 });
 
-app.get('/commandes/insert', function (req, res) {
-    // TODO : Debug
-    // VALUES PRE STORED
-    req.query.planteID = 'plante3';
-    let dateToday = moment(new Date()).format('YYYY-MM-DD hh:mm');
-    console.log(dateToday);
-    req.query.period = 15;
-    req.query.command = 'Arrosage';
-    req.sql("INSERT INTO Commande VALUES(@planteID, @date_heure, @period, @command, 1)")
-        .param("planteID", req.query.planteID)
-        .param("date_heure", dateToday)
-        .param("period", req.query.period)
-        .param("command", req.query.command)
+app.post('/commandes/insert', function (req, res) {
+    let formatedTime = moment(req.body.datetime).format('YYYY-MM-DD hh:mm A');
+    req.sql("INSERT INTO Commande VALUES(@planteID, @date_heure, @period, @action, 0)")
+        .param("planteID", req.body.planteID)
+        .param("date_heure", formatedTime)
+        .param("period", req.body.period)
+        .param("action", req.body.action)
         .into(res);
 });
 
@@ -140,5 +130,23 @@ app.get('*',function(req,res){
     })
 });
 
+// TODO
+// select planteID, select good interval, verify hostname, sendCommand
+function getCommands(planteID, interval){
+    console.log("COMMAND : ");
+    request('http://farmer:'+mdp+'@localhost:3000/commandes/perhours/'+planteID+'/'+interval, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            var msg = JSON.parse(body);
+            console.log(msg);
+        }
+    })
+}
+
 // LISTEN
 app.listen(process.env.port || 3000)
+
+// CRON
+cron.schedule('*/5 * * * * *', () => {
+    getCommands('plante1', 1200);
+});
+
