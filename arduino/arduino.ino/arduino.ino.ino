@@ -1,8 +1,14 @@
 #include <Adafruit_NeoPixel.h>
 #include <SimpleDHT.h>
+#include <SoftwareSerial.h>
 
 #define PIN 6
 #define NUMBER 6
+#define rxPin 11 // Broche 11 en tant que RX, à raccorder sur TX du HC-05
+#define txPin 10 // Broche 10 en tant que TX, à raccorder sur RX du HC-05
+
+SoftwareSerial mySerial(rxPin, txPin);
+
 const int in1 = 2;    // les broches de signal
 const int in2 = 4;
 
@@ -24,7 +30,9 @@ void setup()
 {
   pinMode(in1, OUTPUT);
   pinMode(in2, OUTPUT);
-  Serial.begin(115200);
+  mySerial.begin(9600);
+  Serial.begin(9600);
+
 
   // on démarre moteur en avant et en roue libre
   pinMode(PinAnalogiqueHumidite, INPUT);       //pin A0 en entrée analogique
@@ -37,33 +45,50 @@ void setup()
   strip.show(); 
 }
 
-void loop()
-{ 
-  lights_on();
-  arrosage_off();
-
+void loopPerSec(){
   hsol = analogRead(PinAnalogiqueHumidite); // Lit la tension analogique
   secheresse = digitalRead(PinNumeriqueHumidite);
-
-  lumiere = analogRead(pinLumiere); 
-  Serial.print("Humidité:"); 
-  Serial.println(hsol); // afficher la mesure
-  Serial.print("Lumiere:"); 
-  Serial.print(lumiere); // afficher la mesure
-  delay(1000);
-
+  lumiere = analogRead(pinLumiere);
+  mySerial.print(hsol); // afficher la mesure
+  mySerial.print("#"); 
+  mySerial.print(lumiere); // afficher la mesure
   byte temperature = 0;
   int err = SimpleDHTErrSuccess;
   if ((err = dht11.read(pinDHT11, &temperature, NULL, NULL)) != SimpleDHTErrSuccess) { 
-    Serial.print("Read DHT11 failed, err=");
-    Serial.println(err);delay(1000);
     return; 
   }
-  Serial.print("Lecture OK: ");
-  Serial.print(" TEMPERATURE ");
-  Serial.print((int)temperature);
-  Serial.print(" °C, "); 
+  mySerial.print("#");
+  mySerial.print((int)temperature);
+  mySerial.print("\n");
+  mySerial.println();
+  delay(1000);
 }
+
+void loop()
+{ 
+  int i = 0;
+  char someChar[200] = {0};
+
+  lights_on();
+  arrosage_on();
+
+  loopPerSec();
+  // when characters arrive over the serial port...
+  if(Serial.available()) {
+   do{
+   someChar[i++] = Serial.read();
+   delay(3000);
+   }while (Serial.available() > 0);
+   mySerial.println(someChar);
+   Serial.println(someChar);
+  }
+  while(mySerial.available()){
+   Serial.print((char)mySerial.read());
+  }
+
+}
+
+
 
 void lights_on(){
   uint16_t i; 
