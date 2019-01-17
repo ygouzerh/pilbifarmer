@@ -14,6 +14,8 @@ var Message = require('azure-iot-device').Message;
 // because of network restrictions).
 var Protocol = require('azure-iot-device-mqtt').Mqtt;
 
+const spawn = require("child_process").spawn;
+
 var config = require('./config.json');
 
 // The device-specific connection string to your Azure IoT Hub
@@ -81,8 +83,7 @@ var connectCallback = function (err) {
             */
            // TRANSFORM COMMAND INTO A SIMPLER INTEGER CODE TO ARDUINO
             let parsedData = JSON.parse(msg.data);
-            console.log(parsedData);
-			const spawn = require("child_process").spawn;
+            console.log(parsedData);	
 			const pythonProcess = spawn('python',["sendArd.py", msg.data]);
             let planteId = parsedData.planteId;
             let actionNumber;
