@@ -82,6 +82,8 @@ var connectCallback = function (err) {
            // TRANSFORM COMMAND INTO A SIMPLER INTEGER CODE TO ARDUINO
             let parsedData = JSON.parse(msg.data);
             console.log(parsedData);
+			const spawn = require("child_process").spawn;
+			const pythonProcess = spawn('python',["sendArd.py", msg.data]);
             let planteId = parsedData.planteId;
             let actionNumber;
             let modeNumber;
