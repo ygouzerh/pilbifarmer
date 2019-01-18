@@ -84,7 +84,6 @@ var connectCallback = function (err) {
            // TRANSFORM COMMAND INTO A SIMPLER INTEGER CODE TO ARDUINO
             let parsedData = JSON.parse(msg.data);
             console.log(parsedData);	
-			const pythonProcess = spawn('python',["sendArd.py", msg.data]);
             let planteId = parsedData.planteId;
             let actionNumber;
             let modeNumber;
@@ -128,6 +127,7 @@ var connectCallback = function (err) {
                 console.log("Time = "+timeNumber+", Mode = "+modeNumber+", actionNumber = "+actionNumber);
                 let codeToSent =  timeNumber*100 + modeNumber*10 + actionNumber ;                
                 console.log("Code to sent : ", codeToSent);
+	    const pythonProcess = spawn('python',["sendArd.py", codeToSent + "#"]);
                 // TODO : SENT THE codeToSent TO THE RIGTH planteId
             } else {
                 console.log("Error : can't send the code because the command is not well formated");
