@@ -97,16 +97,27 @@ app.get('/commandes/plante/:planteID', function (req, res) {
         .into(res);
 });
 
+// Get commands per actions
+app.get('/commandes/action/:actionName', function (req, res) {
+    req.sql("SELECT * FROM Commande where command = @action")
+        .param("action", req.params.action)
+        .into(res);
+});
+
+
 app.get('/commandes/perhours/:planteID/:interval', function (req, res) {    
     var instantDate = moment();
     var dateDebut = moment(instantDate).add(-req.params.interval, 'seconds').format('YYYY-MM-DD hh:mm A');
     var dateFin = moment(instantDate).add(req.params.interval, 'seconds').format('YYYY-MM-DD hh:mm A');    
-    req.sql("SELECT * FROM Commande WHERE @dateDebut < date_heure and date_heure < @dateFin and planteID = @planteID and executed = 0 for json path")
+    req.sql("SELECT * FROM Commande where planteID = @planteID for json path")
+        .param("planteID", req.params.planteID)
         .param("dateDebut", dateDebut)
         .param("dateFin", dateFin)
-        .param("planteID", req.params.planteID)
         .into(res);
-    req.sql("UPDATE Commande SET executed = 1 WHERE @dateDebut < date_heure and date_heure < @dateFin and planteID = @planteID for json path")
+    // req.sql("UPDATE Commande SET executed = 1 WHERE @dateDebut < date_heure and date_heure < @dateFin and planteID = @planteID for json path")
+    //     .param("planteID", req.params.planteID)
+    //     .param("dateDebut", dateDebut)
+    //     .param("dateFin", dateFin)
 });
 
 app.post('/commandes/insert', function (req, res) {
