@@ -92,7 +92,7 @@ app.post('/modes/:id', function (req, res) {
 });
 
 app.get('/commandes/plante/:planteID', function (req, res) {
-    req.sql("SELECT * FROM Commande where planteID = @planteID")
+    req.sql("SELECT * FROM Commande where planteID = @planteID for json path")
         .param("planteID", req.params.planteID)
         .into(res);
 });
@@ -110,7 +110,7 @@ app.get('/commandes/perhours/:planteID/:interval', function (req, res) {
     var instantDate = moment();
     var dateDebut = moment(instantDate).add(-req.params.interval, 'seconds').format('YYYY-MM-DD hh:mm A');
     var dateFin = moment(instantDate).add(req.params.interval, 'seconds').format('YYYY-MM-DD hh:mm A');    
-    req.sql("SELECT * FROM Commande where planteID = @planteID for json path")
+    req.sql("SELECT * FROM Commande where planteID = @planteID and @dateDebut < date_heure and date_heure < @dateFin for json path")
         .param("planteID", req.params.planteID)
         .param("dateDebut", dateDebut)
         .param("dateFin", dateFin)
