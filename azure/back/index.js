@@ -10,6 +10,24 @@ const moment = require('moment');
 var request = require('request');
 var cron = require('node-cron');
 
+// USEFUL TOOLS
+
+// Need this to execute a query without using res
+function OutputStream(){
+    return {
+        buffer : "",
+        write: function(value){
+            this.buffer = this.buffer + value;
+        },
+        status: function(value){
+            console.log("Status : "+value);
+        },
+        end: function(){
+            console.log("This is the end");
+        }
+    }
+}
+
 // Create a server object
 var app=express();
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
@@ -125,13 +143,37 @@ app.get('/commandes/perhours/:planteID/:interval', function (req, res) {
 });
 
 app.post('/commandes/insert', function (req, res) {
-    let formatedTime = moment(req.body.datetime).format('YYYY-MM-DD hh:mm A');
-    req.sql("INSERT INTO Commande VALUES(@planteID, @date_heure, @period, @action, 0)")
+    // Get the start date
+    let formatedTime = moment(req.body.datetime, 'YYYY-MM-DD hh:mm:ss A').format('YYYY-MM-DD hh:mm:ss A');
+    console.log(formatedTime);
+    // Get the end time
+    let dateFin = moment(req.body.datetime, 'YYYY-MM-DD hh:mm:ss A').add(req.body.period, 'seconds').format('YYYY-MM-DD hh:mm:ss A');
+    console.log(dateFin);
+    // Use this to be able to execute sql query without using res
+    let overlapsedCommands = new OutputStream();
+    // Verify if we do not have overlapsed commands
+    req.sql("SELECT * from Commande where planteID = @planteID and commande = @action and @dateDebut <= date_heure and date_heure <= @dateFin for json path")
+        .done(function(){
+            // If we don't have overlapsed commands, we could add the query
+            if(( overlapsedCommands.buffer.length <= 2 )){
+                console.log("We will execute it");
+                req.sql("INSERT INTO Commande VALUES(@planteID, @date_heure, @period, @action, 0)")
+                    .param("planteID", req.body.planteID)
+                    .param("date_heure", formatedTime)
+                    .param("period", req.body.period)
+                    .param("action", req.body.action)
+                    .into(new OutputStream());
+                    res.send({result: "success"});
+              } else {
+                  console.log("Overlapsed commands found");
+                  res.send({result: "error"});
+              }
+        })
         .param("planteID", req.body.planteID)
-        .param("date_heure", formatedTime)
-        .param("period", req.body.period)
         .param("action", req.body.action)
-        .into(res);
+        .param("dateDebut", formatedTime)
+        .param("dateFin", dateFin)
+        .into(overlapsedCommands);
 });
 
 // AFFICHAGES DES DONNEES STATIQUES
