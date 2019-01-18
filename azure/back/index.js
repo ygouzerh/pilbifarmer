@@ -178,6 +178,12 @@ app.post('/commandes/insert', function (req, res) {
         .into(overlapsedCommands);
 });
 
+app.post('/commandes/del/:id', function (req, res) {
+
+    req.sql("DELETE FROM Commande WHERE ID = @id")
+    .param('id', req.params.id).into(res);
+});
+
 // AFFICHAGES DES DONNEES STATIQUES
 app.get('*',function(req,res){
     let path = __dirname + '/public/' + req.url;

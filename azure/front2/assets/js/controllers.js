@@ -159,5 +159,18 @@ App.controller('DashboardCtrl', ['$scope', '$http','$localStorage', '$window',
               });
 
         }
+
+        $scope.delete = function(id){
+            $http({
+                method: 'POST',
+                url: server + 'commandes/del/'+id,
+                headers: { 'Content-Type': 'application/json','Authorization': "Basic ZmFybWVyOlBsYW50MzYwJA=="}
+              })
+              .then(function (success) {
+                loadCommandes($scope.plante)
+                  }, function (error) {
+                console.log("error")
+              });
+        }
     }
 ]);

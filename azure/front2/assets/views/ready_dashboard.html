@@ -86,12 +86,12 @@
                             <h3 class="block-title">Arrosage automatisé:</h3>
                     </div>
                 <div class="block-content block-content-narrow">
-                    <div class="row items-push">
+                    <div class="row items-push" ng-hide="arrosagecommandes.length === undefined || arrosagecommandes.length == 0">
                         <h4 class="h5 push-15">Commandes programmés:</h4>
                         <ul>
                             <li style="list-style-type: none;" ng-repeat="commande in arrosagecommandes">
                                 <div class="btn-group" >
-                                    <p style="margin-bottom:0px">Date début: {{commande.date_heure | date : 'à H:mm, le yyyy-MM-d ' }}    -   Durée: {{commande.periode}} secondes<button class="btn btn-xs btn-default" type="button" style="margin-left: 20px;"><i class="fa fa-times"></i></button></p>        
+                                    <p style="margin-bottom:0px">Date début: {{commande.date_heure | date : 'à H:mm, le yyyy-MM-d ' }}    -   Durée: {{commande.periode}} secondes<button class="btn btn-xs btn-default" type="button" style="margin-left: 20px;" ng-click="delete(commande.ID)"><i class="fa fa-times"></i></button></p>        
                                 </div>
                             </li>
                         </ul>
@@ -162,12 +162,12 @@
                                 <h3 class="block-title">Lumière automatisée:</h3>
                         </div>
                     <div class="block-content block-content-narrow">
-                        <div class="row items-push">
+                        <div class="row items-push" ng-hide="lumierecommandes.length === undefined || lumierecommandes.length == 0">
                             <h4 class="h5 push-15">Commandes programmés:</h4>
                             <ul>
                                 <li style="list-style-type: none;" ng-repeat="commande in lumierecommandes">
                                     <div class="btn-group">
-                                        <p style="margin-bottom:0px">Date début: {{commande.date_heure | date : 'à H:mm, le yyyy-MM-d' }}    -   Durée: {{commande.periode}} secondes<button class="btn btn-xs btn-default" type="button" style="margin-left: 20px;"><i class="fa fa-times"></i></button></p>    
+                                        <p style="margin-bottom:0px">Date début: {{commande.date_heure | date : 'à H:mm, le yyyy-MM-d' }}    -   Durée: {{commande.periode}} secondes<button class="btn btn-xs btn-default" type="button" style="margin-left: 20px;" ng-click="delete(commande.ID)"><i class="fa fa-times"></i></button></p>    
                                     </div></li>
                             </ul>
                         </div>
