@@ -51,8 +51,11 @@ if __name__ == '__main__':
 
     while True:
         if time.time()>=t+10:
-            sock = BluetoothSocket (RFCOMM)
-            sock.connect((bd_addr,port))
+            try:
+                sock = BluetoothSocket (RFCOMM)
+                sock.connect((bd_addr,port))
+            except:
+                print("---")
             rec=""
             rec+=sock.recv(1024)
             rec_end=rec.find('\n')
