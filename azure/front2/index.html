@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!--[if IE 9]>         <html class="ie9 no-focus" data-ng-app="app" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-focus" data-ng-app="app" lang="en"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+
+        <title>Water Easy - Dashboard</title>
+
+        <!-- Icons -->
+        <!-- The following icons can be replaced with your own, they are used by desktop and mobile browsers -->
+        <link rel="shortcut icon" href="assets/img/favicons/favicon.png">
+
+        <link rel="icon" type="image/png" href="assets/img/favicons/favicon-16x16.png" sizes="16x16">
+        <link rel="icon" type="image/png" href="assets/img/favicons/favicon-32x32.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="assets/img/favicons/favicon-96x96.png" sizes="96x96">
+        <link rel="icon" type="image/png" href="assets/img/favicons/favicon-160x160.png" sizes="160x160">
+        <link rel="icon" type="image/png" href="assets/img/favicons/favicon-192x192.png" sizes="192x192">
+
+        <link rel="apple-touch-icon" sizes="57x57" href="assets/img/favicons/apple-touch-icon-57x57.png">
+        <link rel="apple-touch-icon" sizes="60x60" href="assets/img/favicons/apple-touch-icon-60x60.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="assets/img/favicons/apple-touch-icon-72x72.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="assets/img/favicons/apple-touch-icon-76x76.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="assets/img/favicons/apple-touch-icon-114x114.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="assets/img/favicons/apple-touch-icon-120x120.png">
+        <link rel="apple-touch-icon" sizes="144x144" href="assets/img/favicons/apple-touch-icon-144x144.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="assets/img/favicons/apple-touch-icon-152x152.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="assets/img/favicons/apple-touch-icon-180x180.png">
+        <!-- END Icons -->
+
+        <!-- Stylesheets -->
+        <!-- Web fonts -->
+        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400italic,600,700%7COpen+Sans:300,400,400italic,600,700">
+
+        <!-- Bootstrap and OneUI CSS framework -->
+        <link rel="stylesheet" id="css-bootstrap" href="assets/css/bootstrap.min.css">
+        <!-- build:remove -->
+        <link rel="stylesheet" id="css-main" href="assets/css/oneui.css">
+        <!-- /build -->
+
+        <!-- build:template
+        <link rel="stylesheet" id="css-main" href="assets/css/oneui.min.css">
+        /build -->
+        <!-- END Stylesheets -->
+    </head>
+    <body data-ng-controller="AppCtrl">
+        <!-- Page loader -->
+        <div id="page-loader"></div>
+
+        <!-- View loader (data-js-view-loader attribute is initialized in js/directives.js) -->
+        <div data-js-view-loader></div>
+
+        <!-- Page Container -->
+        <!-- You can update template settings or enable local storage feature in js/app.js -> 'AppCtrl' controller () -->
+        <div id="page-container" data-ng-class="{
+            'sidebar-l': oneui.settings.sidebarLeft,
+            'sidebar-r': ! oneui.settings.sidebarLeft,
+            'sidebar-o': oneui.settings.sidebarOpen,
+            'sidebar-o-xs': oneui.settings.sidebarOpenXs,
+            'sidebar-mini': oneui.settings.sidebarMini,
+            'side-overlay-o': oneui.settings.sideOverlayOpen,
+            'side-overlay-hover': oneui.settings.sideOverlayHover,
+            'side-scroll': oneui.settings.sideScroll,
+            'header-navbar-fixed': oneui.settings.headerFixed
+        }">
+
+            <!-- Sidebar -->
+            <nav data-ng-include="'assets/views/partials/base_sidebar.html'" data-ng-controller="SidebarCtrl" id="sidebar"></nav>
+
+
+            <!-- Main Container -->
+            <main id="main-container" data-autoscroll="true" data-ui-view></main>
+
+        </div>
+        <!-- END Page Container -->
+
+        <!-- JS Code -->
+        <!-- build:js assets/js/oneui.min.js -->
+        <!-- OneUI Core JS: jQuery & Bootstrap Related -->
+        <script src="assets/js/core/jquery.min.js"></script>
+        <script src="assets/js/core/bootstrap.min.js"></script>
+        <script src="assets/js/core/jquery.slimscroll.min.js"></script>
+        <script src="assets/js/core/jquery.scrollLock.min.js"></script>
+        <script src="assets/js/core/jquery.appear.min.js"></script>
+        <script src="assets/js/core/jquery.countTo.min.js"></script>
+        <script src="assets/js/core/jquery.placeholder.min.js"></script>
+
+        <!-- OneUI Core JS: AngularJS Related -->
+        <script src="assets/js/core/angular.min.js"></script>
+        <script src="assets/js/core/angular-ui-router.min.js"></script>
+        <script src="assets/js/core/angular-ui-bootstrap-tpls.min.js"></script>
+        <script src="assets/js/core/ocLazyLoad.min.js"></script>
+        <script src="assets/js/core/ngStorage.min.js"></script>
+
+        <!-- OneUI Core JS: App Related -->
+        <script src="assets/js/app.js"></script>
+        <script src="assets/js/directives.js"></script>
+        <script src="assets/js/controllers.js"></script>
+        <!-- /build -->
+    </body>
+</html>

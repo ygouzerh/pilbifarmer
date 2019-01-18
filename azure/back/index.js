@@ -98,9 +98,10 @@ app.get('/commandes/plante/:planteID', function (req, res) {
 });
 
 // Get commands per actions
-app.get('/commandes/action/:actionName', function (req, res) {
-    req.sql("SELECT * FROM Commande where command = @action")
-        .param("action", req.params.action)
+app.get('/commandes/action/:planteID/:actionName', function (req, res) {
+    req.sql("SELECT * FROM Commande where Commande LIKE @actionName and planteID = @planteID for json path")
+        .param("planteID", req.params.planteID)
+        .param("actionName", req.params.actionName)
         .into(res);
 });
 
