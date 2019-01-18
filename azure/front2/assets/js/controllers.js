@@ -2,6 +2,7 @@ var server = "http://localhost:3000/"
 // Dashboard Content Controller
 App.controller('DashboardCtrl', ['$scope', '$http','$localStorage', '$window',
     function ($scope, $http, $localStorage, $window) {
+        moment.locale('fr');
         $scope.selectedFerme = false;
         $scope.selectedPlante = false;
         $scope.autoArrosage = true;
@@ -62,14 +63,29 @@ App.controller('DashboardCtrl', ['$scope', '$http','$localStorage', '$window',
               }, function errorCallback(response) {});      
         }
 
+        $scope.log = function(){
+            console.log("changed")
+            console.log($scope.date)
+        }
+
+        $scope.startDateBeforeRender = function($dates) {
+            const todaySinceMidnight = new Date();
+              todaySinceMidnight.setUTCHours(0,0,0,0);
+              $dates.filter(function (date) {
+                return date.utcDateValue < todaySinceMidnight.getTime();
+              }).forEach(function (date) {
+                date.selectable = false;
+              });
+          };
+          
         loadCommandes = function(plante){
             if($scope.autoArrosage){
                 $http({
                     method: 'GET',
-                    url: server + 'commandes/action/' + plante.planteID + '/arrosage',
+                    url: server + 'commandes/action/' + plante.planteID + '/water',
                     headers: { 'Authorization': "Basic ZmFybWVyOlBsYW50MzYwJA=="}
                   }).then(function successCallback(response) {
-                    console.log(response.data)
+                    
                     $scope.arrosagecommandes = response.data;
                   }, function errorCallback(response) {
                     
@@ -82,7 +98,7 @@ App.controller('DashboardCtrl', ['$scope', '$http','$localStorage', '$window',
                     url: server + 'commandes/action/' + plante.planteID + '/light',
                     headers: { 'Authorization': "Basic ZmFybWVyOlBsYW50MzYwJA=="}
                   }).then(function successCallback(response) {
-                    console.log(response.data)
+                    
                     $scope.lumierecommandes = response.data;
                   }, function errorCallback(response) {
                     
@@ -113,6 +129,35 @@ App.controller('DashboardCtrl', ['$scope', '$http','$localStorage', '$window',
 
         }
 
+        $scope.submitArr = function(){
+            console.log({'date':$scope.arrosagedate,'duree':$scope.arrosageduree})
+            $http({
+                method: 'POST',
+                url: server + 'commandes/insert',
+                headers: { 'Content-Type': 'application/json','Authorization': "Basic ZmFybWVyOlBsYW50MzYwJA=="},
+                data: {"planteID":$scope.plante.planteID,"date_heure":$scope.arrosagedate.toJSON(),"period":$scope.arrosageduree,"action":"water"}
+              })
+              .then(function (success) {
+                loadCommandes($scope.plante)
+                  }, function (error) {
+                console.log("error")
+              });
+        }
             
+        $scope.submitLum = function(){
+            console.log({'date':$scope.lumieredate,'duree':$scope.lumiereduree})
+            $http({
+                method: 'POST',
+                url: server + 'commandes/insert',
+                headers: { 'Content-Type': 'application/json','Authorization': "Basic ZmFybWVyOlBsYW50MzYwJA=="},
+                data: {"planteID":$scope.plante.planteID,"date_heure":$scope.lumiereduree.toJSON(),"period":$scope.lumieredate,"action":"light"}
+              })
+              .then(function (success) {
+                loadCommandes($scope.plante)
+                  }, function (error) {
+                console.log("error")
+              });
+
+        }
     }
 ]);

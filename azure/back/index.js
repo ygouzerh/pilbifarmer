@@ -144,10 +144,12 @@ app.get('/commandes/perhours/:planteID/:interval', function (req, res) {
 
 app.post('/commandes/insert', function (req, res) {
     // Get the start date
-    let formatedTime = moment(req.body.datetime, 'YYYY-MM-DD hh:mm:ss A').format('YYYY-MM-DD hh:mm:ss A');
+    console.log(req.body.date_heure);
+    let formatedTime = moment(req.body.date_heure).format('YYYY-MM-DD hh:mm:ss A');
+    console.log("formatedTime");
     console.log(formatedTime);
     // Get the end time
-    let dateFin = moment(req.body.datetime, 'YYYY-MM-DD hh:mm:ss A').add(req.body.period, 'seconds').format('YYYY-MM-DD hh:mm:ss A');
+    let dateFin = moment(req.body.date_heure).add(req.body.period, 'seconds').format('YYYY-MM-DD hh:mm:ss A');
     console.log(dateFin);
     // Use this to be able to execute sql query without using res
     let overlapsedCommands = new OutputStream();

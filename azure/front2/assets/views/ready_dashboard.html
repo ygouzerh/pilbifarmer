@@ -89,29 +89,31 @@
                     <div class="row items-push">
                         <h4 class="h5 push-15">Commandes programmés:</h4>
                         <ul>
-                            <li style="list-style-type: none;"><div class="btn-group" ng-repeat="commande in arrosagecommandes">
-                                    <p>Date début: {{commande.date_heure | date : 'yyyy-MM-d H:mm' }}    -   Durée: {{commande.periode}} secondes<button class="btn btn-xs btn-default" type="button" style="margin-left: 20px;"><i class="fa fa-times"></i></button></p>
-                                    
-                                </div></li>
+                            <li style="list-style-type: none;" ng-repeat="commande in arrosagecommandes">
+                                <div class="btn-group" >
+                                    <p style="margin-bottom:0px">Date début: {{commande.date_heure | date : 'à H:mm, le yyyy-MM-d ' }}    -   Durée: {{commande.periode}} secondes<button class="btn btn-xs btn-default" type="button" style="margin-left: 20px;"><i class="fa fa-times"></i></button></p>        
+                                </div>
+                            </li>
                         </ul>
                     </div>
                     <form class="form-horizontal" action="index.html" method="post" onsubmit="return false;">
                             <div class="form-group">
                                     <label class="col-md-4 control-label">Date & heure début:</label>
                                     <div class="col-md-6">
-                                        <div data-js-datetimepicker="{inline: true}"></div>
+                                        <!-- <div ng-change="log()" data-ng-model="date" data-js-datetimepicker="{inline: true}"></div> -->
+                                        <datetimepicker data-ng-model="arrosagedate" data-before-render="startDateBeforeRender($dates)"></datetimepicker>
                                     </div>
                                     
                             </div>
                             <div class="form-group">
                                     <label class="col-md-4 control-label" for="example-maxlength1">Durée (en secondes) :</label>
                                     <div class="col-md-6">
-                                        <input class="form-control" type="text" id="example-maxlength1" name="example-maxlength1">
+                                        <input class="form-control" ng-model="arrosageduree" type="text" id="example-maxlength1" name="example-maxlength1">
                                     </div>
                             </div>
                             <div class="form-group">
                                     <div class="col-md-8 col-md-offset-4">
-                                        <button class="btn btn-sm btn-primary" type="submit">Submit</button>
+                                        <button class="btn btn-sm btn-primary" type="submit" ng-click="submitArr()">Submit</button>
                                     </div>
                                 </div>
         
@@ -163,9 +165,9 @@
                         <div class="row items-push">
                             <h4 class="h5 push-15">Commandes programmés:</h4>
                             <ul>
-                                <li style="list-style-type: none;"><div class="btn-group" ng-repeat="commande in lumierecommandes">
-                                        <p>Date début: {{commande.date_heure | date : 'yyyy-MM-d H:mm' }}    -   Durée: {{commande.periode}} secondes<button class="btn btn-xs btn-default" type="button" style="margin-left: 20px;"><i class="fa fa-times"></i></button></p>
-                                        
+                                <li style="list-style-type: none;" ng-repeat="commande in lumierecommandes">
+                                    <div class="btn-group">
+                                        <p style="margin-bottom:0px">Date début: {{commande.date_heure | date : 'à H:mm, le yyyy-MM-d' }}    -   Durée: {{commande.periode}} secondes<button class="btn btn-xs btn-default" type="button" style="margin-left: 20px;"><i class="fa fa-times"></i></button></p>    
                                     </div></li>
                             </ul>
                         </div>
@@ -173,19 +175,20 @@
                                 <div class="form-group">
                                         <label class="col-md-4 control-label">Date & heure début:</label>
                                         <div class="col-md-6">
-                                            <div data-js-datetimepicker="{inline: true}"></div>
+                                            <!-- <div data-js-datetimepicker="{inline: true}"></div> -->
+                                            <datetimepicker data-ng-model="lumieredate" data-before-render="startDateBeforeRender($dates)"></datetimepicker>
                                         </div>
                                         
                                 </div>
                                 <div class="form-group">
                                         <label class="col-md-4 control-label" for="example-maxlength1">Durée (en minutes) :</label>
                                         <div class="col-md-6">
-                                            <input class="form-control" type="text" id="example-maxlength1" name="example-maxlength1">
+                                            <input class="form-control" type="text" ng-model="lumiereduree" id="example-maxlength1" name="example-maxlength1">
                                         </div>
                                 </div>
                                 <div class="form-group">
                                         <div class="col-md-8 col-md-offset-4">
-                                            <button class="btn btn-sm btn-primary" type="submit">Submit</button>
+                                            <button class="btn btn-sm btn-primary" type="submit" ng-click="submitLum()">Submit</button>
                                         </div>
                                     </div>
             

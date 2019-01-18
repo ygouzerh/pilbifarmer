@@ -4,7 +4,8 @@ var App = angular.module('app', [
     'ngStorage',
     'ui.router',
     'ui.bootstrap',
-    'oc.lazyLoad'
+    'oc.lazyLoad',
+    'ui.bootstrap.datetimepicker'
 ]);
 
 // Router configuration
