@@ -160,7 +160,8 @@ function getCommandsPerInterval(interval){
     console.log(dateFin);
     requester("select p.planteID as planteID, p.raspyID as raspyID, periode, commande as action "+
                 "from Commande c inner join Plante p on c.planteID = p.planteID "+
-                "where @dateDebut < date_heure and date_heure < @dateFin and executed = 0 for json path")
+                "inner join Mode m on m.planteID = p.planteID and m.action = c.commande "+
+                "where @dateDebut < date_heure and date_heure < @dateFin and executed = 0 and m.automatique = 1 for json path")
         .param("dateDebut", dateDebut)
         .param("dateFin", dateFin)
         .done(function(){
