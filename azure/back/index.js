@@ -142,6 +142,11 @@ app.get('/commandes/perhours/:planteID/:interval', function (req, res) {
         .into(res);
 });
 
+/**
+ * Get the list of commands non-executed that need to be executed
+ * in the range : date - interval -> date + interval
+ * @param {int} interval Interval before / after the actual time
+ */
 function getCommandsPerInterval(interval){
     var instantDate = moment();
     var dateDebut = moment(instantDate).add(-interval, 'seconds').format('YYYY-MM-DD HH:mm:ss');
@@ -150,11 +155,14 @@ function getCommandsPerInterval(interval){
     let commands = new OutputStream();
     console.log(dateDebut);
     console.log(dateFin);
-    requester("SELECT * FROM Commande where @dateDebut < date_heure and date_heure < @dateFin and executed = 0 for json path")
+    requester("select p.planteID as planteID, p.raspyID as raspyID, periode, commande as action "+
+                "from Commande c inner join Plante p on c.planteID = p.planteID "+
+                "where @dateDebut < date_heure and date_heure < @dateFin and executed = 0 for json path")
         .param("dateDebut", dateDebut)
         .param("dateFin", dateFin)
         .done(function(){
-            requester("UPDATE Commande SET executed = 0 WHERE @dateDebut < date_heure and date_heure < @dateFin")
+            // Mark theses commands as executed.
+            requester("UPDATE Commande SET executed = 1 WHERE @dateDebut < date_heure and date_heure < @dateFin")
             .param("dateDebut", dateDebut)
             .param("dateFin", dateFin)
             .exec(new OutputStream());
@@ -163,10 +171,19 @@ function getCommandsPerInterval(interval){
         .into(commands);
 }
 
+/**
+ * Send the list of commands to the raspberry
+ * @param {Array} commandsSQL Array of commands to execute now
+ */
 function executeCommands(commandsSQL){
-    console.log(commandsSQL);
+    JSON.parse(commandsSQL).forEach(function(command){
+        senderCommands.sendCommand(command.raspyID, command.planteID, command.action, 'period', {time: command.periode});
+    });
 }
 
+/**
+ * Insert automatized commands in the database
+ */
 app.post('/commandes/insert', function (req, res) {
     // Get the start date
     console.log(req.body.date_heure);
@@ -209,7 +226,7 @@ app.post('/commandes/del/:id', function (req, res) {
     .param('id', req.params.id).into(res);
 });
 
-// AFFICHAGES DES DONNEES STATIQUES
+// DISPLAY STATIC DATAS
 app.get('*',function(req,res){
     let path = __dirname + '/public/' + req.url;
     fs.access(path, (err) => {
@@ -221,26 +238,13 @@ app.get('*',function(req,res){
     })
 });
 
-// TODO
-// select planteID, select good interval, verify hostname, sendCommand
-function getCommands(planteID, interval){
-    console.log("COMMAND : ");
-
-    request('http://farmer:'+mdp+'@localhost:3000/commandes/perhours/'+planteID+'/'+interval, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-            var msg = JSON.parse(body);
-            console.log(msg);
-        }
-    })
-}
-
 // LISTEN
 app.listen(process.env.port || 3000)
 
-getCommandsPerInterval(2000);
 
-// CRON
-// cron.schedule('*/5 * * * * *', () => {
-//     getCommands('plante1', 1200);
-// });
+// CRON TO GET AUTOMATIZED COMMANDS
+cron.schedule('* */2 * * *', () => {
+    console.log(new Date());
+    getCommandsPerInterval(60);
+});
 
