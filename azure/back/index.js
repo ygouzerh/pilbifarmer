@@ -62,6 +62,7 @@ app.use(function (req, res, next) {
 // API for the front-end form. Use it to send command to a raspberry
 app.get('/sendCommand',function(req,res){
     senderCommands.sendCommand(req.query.rasp, req.query.planteId, req.query.action, req.query.mode, {time: req.query.time})
+    res.sendStatus(200);
 });
 
 app.get('/raspy', function (req, res) {
@@ -100,13 +101,15 @@ app.get('/modes/:id', function (req, res) {
 });
 
 app.post('/modes/:id', function (req, res) {
-    var body = req.body.state;
+    var body = req.body.auto;
     if(body === "on")
-        var state = 1
+        var auto = 1
     else
-        var state = 0
-    req.sql("UPDATE Mode SET automatique = " + state + "where planteID = @id and arrosage = " + req.body.arrosage)
-    .param('id', req.params.id).into(res);
+        var auto = 0
+    req.sql("UPDATE Mode SET automatique = " + auto + "where planteID = @id and action = @action")
+    .param('id', req.params.id)
+    .param('action',req.body.action)
+    .into(res);
 });
 
 app.get('/commandes/plante/:planteID', function (req, res) {

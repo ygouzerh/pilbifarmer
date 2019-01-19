@@ -35,34 +35,60 @@ App.controller('DashboardCtrl', ['$scope', '$http','$localStorage', '$window',
             });
         }
 
-        $scope.selectPlante = function(plante){
-            $http({
-                method: 'GET',
-                url: server + 'modes/' + plante.planteID,
-                headers: { 'Authorization': "Basic ZmFybWVyOlBsYW50MzYwJA=="}
-              }).then(function successCallback(response) {
-                $scope.modes = response.data
-                $scope.modes.forEach(element => {
-                    if (element.arrosage){
-                        if(element.automatique)
-                            $scope.autoArrosage = true;
-                        else
-                            $scope.autoArrosage = false;
-                    }
-                    else {
-                        if(element.automatique)
-                            $scope.autoLumiere = true;
-                        else
-                            $scope.autoLumiere = false;
-                    }
-                })
-                $scope.selectedPlante = true
-                $scope.plante = plante
-                loadCommandes($scope.plante)
+        // $scope.selectPlante = function(plante){
+        //     $http({
+        //         method: 'GET',
+        //         url: server + 'modes/' + plante.planteID,
+        //         headers: { 'Authorization': "Basic ZmFybWVyOlBsYW50MzYwJA=="}
+        //       }).then(function successCallback(response) {
+        //         $scope.modes = response.data
+        //         $scope.modes.forEach(element => {
+        //             if (element.arrosage){
+        //                 if(element.automatique)
+        //                     $scope.autoArrosage = true;
+        //                 else
+        //                     $scope.autoArrosage = false;
+        //             }
+        //             else {
+        //                 if(element.automatique)
+        //                     $scope.autoLumiere = true;
+        //                 else
+        //                     $scope.autoLumiere = false;
+        //             }
+        //         })
+        //         $scope.selectedPlante = true
+        //         $scope.plante = plante
+        //         loadCommandes($scope.plante)
                 
-              }, function errorCallback(response) {});      
-        }
-
+        //       }, function errorCallback(response) {});      
+        // }
+        $scope.selectPlante = function(plante){
+          $http({
+              method: 'GET',
+              url: server + 'modes/' + plante.planteID,
+              headers: { 'Authorization': "Basic ZmFybWVyOlBsYW50MzYwJA=="}
+            }).then(function successCallback(response) {
+              $scope.modes = response.data
+              $scope.modes.forEach(element => {
+                  if (element.action == "water"){
+                      if(element.automatique)
+                          $scope.autoArrosage = true;
+                      else
+                          $scope.autoArrosage = false;
+                  }
+                  else {
+                      if(element.automatique)
+                          $scope.autoLumiere = true;
+                      else
+                          $scope.autoLumiere = false;
+                  }
+              })
+              $scope.selectedPlante = true
+              $scope.plante = plante
+              loadCommandes($scope.plante)
+              
+            }, function errorCallback(response) {});      
+      }
         $scope.log = function(){
             console.log("changed")
             console.log($scope.date)
@@ -108,12 +134,15 @@ App.controller('DashboardCtrl', ['$scope', '$http','$localStorage', '$window',
         }
 
         $scope.updateMode = function(arrosage,state){
-            
+            if (arrosage)
+              action = "water"
+            else
+              action = "light"
             $http({
                 method: 'POST',
                 url: server + 'modes/' + $scope.plante.planteID,
                 headers: { 'Content-Type': 'application/json','Authorization': "Basic ZmFybWVyOlBsYW50MzYwJA=="},
-                data: {"state":state,"arrosage":arrosage}
+                data: {"auto":state,"action":action}
               })
               .then(function (success) {
                     if(arrosage){
