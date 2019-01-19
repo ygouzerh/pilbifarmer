@@ -40,7 +40,6 @@ function sendCommand(raspyId, planteId, actionName, modeName, params) {
     console.log("SendCommand - will launch : ");
     console.log(payload)
     // TODO : OVERRIDE
-    raspyId = 'MyNodeDevice'
     serviceClient.getInstance().send(raspyId, JSON.stringify(payload));
 }
 
