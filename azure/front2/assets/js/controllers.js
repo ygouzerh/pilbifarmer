@@ -172,5 +172,30 @@ App.controller('DashboardCtrl', ['$scope', '$http','$localStorage', '$window',
                 console.log("error")
               });
         }
+
+        $scope.on = function(act){
+          $http({
+            method: 'GET',
+            url: server + 'sendCommand',
+            headers: { 'Authorization': "Basic ZmFybWVyOlBsYW50MzYwJA=="},
+            params: {rasp: $scope.plante.raspyID ,planteId: $scope.plante.planteID ,action: act, mode: 'on'}
+          }).then(function successCallback(response) {
+            console.log("OK")
+          }, function errorCallback(response) {
+          });
+        }
+
+        $scope.off = function(act){
+          $http({
+            method: 'GET',
+            url: server + 'sendCommand',
+            headers: { 'Authorization': "Basic ZmFybWVyOlBsYW50MzYwJA=="},
+            params: {rasp: $scope.plante.raspyID ,planteId: $scope.plante.planteID ,action: act, mode: 'off'}
+          }).then(function successCallback(response) {
+            console.log($scope.plante)
+            console.log("OK")
+          }, function errorCallback(response) {
+          });
+        }
     }
 ]);
