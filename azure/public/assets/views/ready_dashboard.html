@@ -228,14 +228,19 @@
         </div>
     </div>
  <!--Données powerBI Plante1-->
-    <h2>Données Capteurs</h2><br>
-    <h6>Légende</h6>
-    <li>Température ambiante (en °C)</li>
-    <li>Lumière valeur minimale 300 et valeur maximale 50 (en Lux)</li>
-    <li>Humidité du sol - Terre humide <= 500 - Max 390</li><br>
-    <iframe width="100%" height="700" 
-src="https://app.powerbi.com/view?r=eyJrIjoiMDU0MWZiYWEtNzA3OS00NGIxLWJhZmItNTA5ZjBmYmU5MjAyIiwidCI6IjcyZjRmY2I4LTc2ZDItNDI4OS04ZGJjLWZlNGRlZTczZmMzOSIsImMiOjh9" 
-frameborder="0" allowFullScreen="true"></iframe>
-
+ 	<div class="block" ng-show="selectedFerme && selectedPlante">
+ 		<div class="block-header">
+            <h3 class="block-title">Données Capteurs</h3>
+        </div>
+ 		<div class="block-content block-content-full bg-gray-lighter">
+		    <h6>Légende</h6>
+		    <li>Température ambiante (en °C)</li>
+		    <li>Lumière valeur minimale 300 et valeur maximale 50 (en Lux)</li>
+		    <li>Humidité du sol - Terre humide <= 500 - Max 390</li><br>
+		    <iframe width="100%" height="700" 
+		src="https://app.powerbi.com/view?r=eyJrIjoiMDU0MWZiYWEtNzA3OS00NGIxLWJhZmItNTA5ZjBmYmU5MjAyIiwidCI6IjcyZjRmY2I4LTc2ZDItNDI4OS04ZGJjLWZlNGRlZTczZmMzOSIsImMiOjh9" 
+		frameborder="0" allowFullScreen="true"></iframe>
+		</div>
+	</div>
 </div>
 <!-- END Page Content -->
