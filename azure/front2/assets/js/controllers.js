@@ -150,7 +150,7 @@ App.controller('DashboardCtrl', ['$scope', '$http','$localStorage', '$window',
                 method: 'POST',
                 url: server + 'commandes/insert',
                 headers: { 'Content-Type': 'application/json','Authorization': "Basic ZmFybWVyOlBsYW50MzYwJA=="},
-                data: {"planteID":$scope.plante.planteID,"date_heure":$scope.lumiereduree.toJSON(),"period":$scope.lumieredate,"action":"light"}
+                data: {"planteID":$scope.plante.planteID,"date_heure":$scope.lumieredate.toJSON(),"period":$scope.lumiereduree,"action":"light"}
               })
               .then(function (success) {
                 loadCommandes($scope.plante)
