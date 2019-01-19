@@ -126,8 +126,8 @@ app.get('/commandes/action/:planteID/:actionName', function (req, res) {
 
 app.get('/commandes/perhours/:planteID/:interval', function (req, res) {    
     var instantDate = moment();
-    var dateDebut = moment(instantDate).add(-req.params.interval, 'seconds').format('YYYY-MM-DD hh:mm A');
-    var dateFin = moment(instantDate).add(req.params.interval, 'seconds').format('YYYY-MM-DD hh:mm A');    
+    var dateDebut = moment(instantDate).add(-req.params.interval, 'seconds').format('YYYY-MM-DD HH:mm:ss');
+    var dateFin = moment(instantDate).add(req.params.interval, 'seconds').format('YYYY-MM-DD HH:mm:ss');    
     req.sql("SELECT * FROM Commande where planteID = @planteID and @dateDebut < date_heure and date_heure < @dateFin and executed = 0 for json path")
         .param("planteID", req.params.planteID)
         .param("dateDebut", dateDebut)
@@ -141,6 +141,31 @@ app.get('/commandes/perhours/:planteID/:interval', function (req, res) {
         })
         .into(res);
 });
+
+function getCommandsPerInterval(interval){
+    var instantDate = moment();
+    var dateDebut = moment(instantDate).add(-interval, 'seconds').format('YYYY-MM-DD HH:mm:ss');
+    var dateFin = moment(instantDate).add(interval, 'seconds').format('YYYY-MM-DD HH:mm:ss');  
+    let requester = tediousExpress(config.get('connection'));
+    let commands = new OutputStream();
+    console.log(dateDebut);
+    console.log(dateFin);
+    requester("SELECT * FROM Commande where @dateDebut < date_heure and date_heure < @dateFin and executed = 0 for json path")
+        .param("dateDebut", dateDebut)
+        .param("dateFin", dateFin)
+        .done(function(){
+            requester("UPDATE Commande SET executed = 0 WHERE @dateDebut < date_heure and date_heure < @dateFin")
+            .param("dateDebut", dateDebut)
+            .param("dateFin", dateFin)
+            .exec(new OutputStream());
+            executeCommands(commands.buffer);
+        })
+        .into(commands);
+}
+
+function executeCommands(commandsSQL){
+    console.log(commandsSQL);
+}
 
 app.post('/commandes/insert', function (req, res) {
     // Get the start date
@@ -200,6 +225,7 @@ app.get('*',function(req,res){
 // select planteID, select good interval, verify hostname, sendCommand
 function getCommands(planteID, interval){
     console.log("COMMAND : ");
+
     request('http://farmer:'+mdp+'@localhost:3000/commandes/perhours/'+planteID+'/'+interval, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             var msg = JSON.parse(body);
@@ -210,6 +236,8 @@ function getCommands(planteID, interval){
 
 // LISTEN
 app.listen(process.env.port || 3000)
+
+getCommandsPerInterval(2000);
 
 // CRON
 // cron.schedule('*/5 * * * * *', () => {
