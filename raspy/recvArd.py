@@ -8,8 +8,11 @@ import requests
 import json
 import os
 import time
+import sys
 
 from bluetooth import *
+
+from plantesIds import plantesId
 
 # Azure IoT Hub
 URI = 'RMAiothub.azure-devices.net'
@@ -17,7 +20,6 @@ KEY = 'Gs/KU8nn5HOz5IDsVZwRBXPsTfCSXHyFOG4Tq8ueuXU='
 IOT_DEVICE_ID = 'RaspberryPi'
 POLICY = 'iothubowner'
 
-bd_addr='00:14:03:06:8E:56'
 port=1
 
 def generate_sas_token():
@@ -48,28 +50,31 @@ if __name__ == '__main__':
     token = generate_sas_token()
 
     t=time.time()
+    param=int(sys.argv[1])
 
-    while True:
-        if time.time()>=t+10:
-            try:
-                sock = BluetoothSocket (RFCOMM)
-                sock.connect((bd_addr,port))
-            except:
-                print("---")
-            rec=""
-            rec+=sock.recv(1024)
-            rec_end=rec.find('\n')
+    for cle,addr in plantesId.items():
+        while True:
+            if time.time()>=t+param:
+                try:
+                    print("Plante d'ID : "+cle+", d'adresse : "+addr)
+                    sock = BluetoothSocket (RFCOMM)
+                    sock.connect((addr,port))
+                except:
+                    print("---")
+                rec=""
+                rec+=sock.recv(1024)
+                rec_end=rec.find('\n')
 
-            if rec_end != -1:
-                data=rec[:rec_end]
-                print(data)
-                tab=data.split('#')
-                print(tab)
-                message= {"soilhum":tab[0], "lum":tab[1], "temp":tab[2].replace('\r','')}
-                print(message)
-                send_message(token, message)
-                rec=rec[rec_end+1:]
+                if rec_end != -1:
+                    data=rec[:rec_end]
+                    print(data)
+                    tab=data.split('#')
+                    print(tab)
+                    message= {"plantId":cle,"soilhum":tab[0], "lum":tab[1], "temp":tab[2].replace('\r','')}
+                    print(message)
+                    send_message(token, message)
+                    rec=rec[rec_end+1:]
 
-            sock.close()
-            t=time.time()
+                sock.close()
+                t=time.time()
 
