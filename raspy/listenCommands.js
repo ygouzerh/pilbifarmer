@@ -1,36 +1,31 @@
 'use strict';
-// Define the objects you will be working with
-var device = require('azure-iot-device');
 
-// Define the client object that communicates with Azure IoT Hubs
+/**
+ * This script listen the commands from the IOT Hub, and send
+ * them to the right arduino, using a python program.
+ * This script is intended to be ran on a Raspberry Pi
+ */
+
+var device = require('azure-iot-device');
 var Client = require('azure-iot-device').Client;
 
-// Define the message object that will define the message format going into Azure IoT Hubs
-var Message = require('azure-iot-device').Message;
-
-// Define the protocol that will be used to send messages to Azure IoT Hub
-// For this lab we will use AMQP over Web Sockets. The usage of Web Sockets allows using
-// AMQP also in environments where standard AMQP ports do not work (for example,
-// because of network restrictions).
+// Use MQTT as communication protocol
 var Protocol = require('azure-iot-device-mqtt').Mqtt;
 
 const spawn = require("child_process").spawn;
 
 var config = require('./config.json');
 
-// The device-specific connection string to your Azure IoT Hub
+// Connection string of the device
 var connectionString = config.connectionString;
 
-// Create the client instanxe that will manage the connection to your IoT Hub
-// The client is created in the context of an Azure IoT device.
+// Create the client
 var client = Client.fromConnectionString(connectionString, Protocol);
 
-// Extract the Azure IoT Hub device ID from the connection string
+// Get the deviceID of the raspberry
 var deviceId = device.ConnectionString.parse(connectionString).DeviceId;
 
-// *********************************************
-// Helper function to print results in the console
-// *********************************************
+// Helper function to display informations on a message
 function printResultFor(op) {
   return function printResult(err, res) {
     if (err) console.log(op + ' error: ' + err.toString());
@@ -38,38 +33,24 @@ function printResultFor(op) {
   };
 }
 
-// *********************************************
-// Open the connection to Azure IoT Hub.
-// When the connection respondes (either open or
-// error) the anonymous function is executed.
-// *********************************************
+// Behavior of the receiver when we have open the connection
 var connectCallback = function (err) {
     console.log('Open Azure IoT connection...');
 
-    // *********************************************
-    // If there is a connection error, display it
-    // in the console.
-    // *********************************************
+    // Display an error if we receive one
     if(err) {
         console.error('...could not connect: ' + err);
-
-    // *********************************************
-    // If there is no error, send and receive
-    // messages, and process completed messages.
-    // *********************************************
     } else {
         console.log('...client connected');
 
-        // *********************************************
-        // Listen for incoming messages
-        // *********************************************
+        // Listen the messages from the iot hub
         client.on('message', function (msg) {
             console.log('*********************************************');
             console.log('**** Message Received - Id: ' + msg.messageId + ' Body: ' + msg.data);
             console.log('*********************************************');
             console.log('Message : ');
             /*
-                We receive this payload
+                We receive this payload :
                 var payload = {
                     planteId: planteId,
                     action: {
@@ -127,33 +108,21 @@ var connectCallback = function (err) {
                 console.log("Time = "+timeNumber+", Mode = "+modeNumber+", actionNumber = "+actionNumber);
                 let codeToSent =  timeNumber*100 + modeNumber*10 + actionNumber ;                
                 console.log("Code to sent : ", codeToSent);
-	    const pythonProcess = spawn('python',["sendArd.py", codeToSent + "#"]);
+	            const pythonProcess = spawn('python',["sendArd.py", codeToSent + "#", planteId]);
                 // TODO : SENT THE codeToSent TO THE RIGTH planteId
             } else {
                 console.log("Error : can't send the code because the command is not well formated");
             }
 
-            // *********************************************
-            // Process completed messages and remove them
-            // from the message queue.
-            // *********************************************
             client.complete(msg, printResultFor('completed'));
-            // reject and abandon follow the same pattern.
-            // /!\ reject and abandon are not available with MQTT
         });
 
-        // *********************************************
-        // If the client gets an error, dsiplay it in
-        // the console.
-        // *********************************************
+        // If we receive an error, we print it
         client.on('error', function (err) {
             console.error(err.message);
         });
 
-        // *********************************************
-        // If the client gets disconnected, cleanup and
-        // reconnect.
-        // *********************************************
+        // If we receive a disconnection message, we disconnect the client
         client.on('disconnect', function () {
             console.log("disconnection");
             clearInterval(sendInterval);
@@ -163,8 +132,5 @@ var connectCallback = function (err) {
     }
 }
 
-// *********************************************
-// Open the connection to Azure IoT Hubs and
-// begin sending messages.
-// *********************************************
+// Open the connection
 client.open(connectCallback);
