@@ -8,7 +8,7 @@
 
 var device = require('azure-iot-device');
 var Client = require('azure-iot-device').Client;
-
+var Message = require('azure-iot-device').Message;
 // Use MQTT as communication protocol
 var Protocol = require('azure-iot-device-mqtt').Mqtt;
 
@@ -108,7 +108,8 @@ var connectCallback = function (err) {
                 console.log("Time = "+timeNumber+", Mode = "+modeNumber+", actionNumber = "+actionNumber);
                 let codeToSent =  timeNumber*100 + modeNumber*10 + actionNumber ;                
                 console.log("Code to sent : ", codeToSent);
-	            const pythonProcess = spawn('python',["sendArd.py", codeToSent + "#", planteId]);
+		console.log("PlanteId : ",planteId);
+	        const pythonProcess = spawn('python',["sendArd.py", codeToSent + "#", planteId]);
                 // TODO : SENT THE codeToSent TO THE RIGTH planteId
             } else {
                 console.log("Error : can't send the code because the command is not well formated");
