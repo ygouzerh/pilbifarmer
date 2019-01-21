@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!--[if IE 9]>         <html class="ie9 no-focus" data-ng-app="app" lang="en"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-focus" data-ng-app="app" lang="fr"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+
+        <title>Water Easy - Dashboard</title>
+
+        <!-- END Icons -->
+
+        <!-- Stylesheets -->
+        <!-- Web fonts -->
+        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400italic,600,700%7COpen+Sans:300,400,400italic,600,700">
+
+        <!-- Bootstrap and OneUI CSS framework -->
+        <link rel="stylesheet" id="css-bootstrap" href="assets/css/bootstrap.min.css">
+        <!-- build:remove -->
+        <link rel="stylesheet" id="css-main" href="assets/css/oneui.css">
+        <!-- /build -->
+        <link rel="stylesheet" href="assets/css/datetimepicker.css">
+        <!-- build:template
+        <link rel="stylesheet" id="css-main" href="assets/css/oneui.min.css">
+        /build -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+        <!-- END Stylesheets -->
+    </head>
+    <body data-ng-controller="AppCtrl">
+        <!-- Page loader -->
+        <div id="page-loader"></div>
+
+        <!-- View loader (data-js-view-loader attribute is initialized in js/directives.js) -->
+        <div data-js-view-loader></div>
+
+        <!-- Page Container -->
+        <!-- You can update template settings or enable local storage feature in js/app.js -> 'AppCtrl' controller () -->
+        <div id="page-container" data-ng-class="{
+            'sidebar-l': oneui.settings.sidebarLeft,
+            'sidebar-r': ! oneui.settings.sidebarLeft,
+            'sidebar-o': oneui.settings.sidebarOpen,
+            'sidebar-o-xs': oneui.settings.sidebarOpenXs,
+            'sidebar-mini': oneui.settings.sidebarMini,
+            'side-overlay-o': oneui.settings.sideOverlayOpen,
+            'side-overlay-hover': oneui.settings.sideOverlayHover,
+            'side-scroll': oneui.settings.sideScroll,
+            'header-navbar-fixed': oneui.settings.headerFixed
+        }">
+
+            <!-- Sidebar -->
+            <nav data-ng-include="'assets/views/partials/base_sidebar.html'" data-ng-controller="SidebarCtrl" id="sidebar"></nav>
+
+
+            <!-- Main Container -->
+            <main id="main-container" data-autoscroll="true" data-ui-view></main>
+
+        </div>
+        <!-- END Page Container -->
+
+        <!-- JS Code -->
+        <!-- build:js assets/js/oneui.min.js -->
+        <!-- OneUI Core JS: jQuery & Bootstrap Related -->
+        <script src="assets/js/core/jquery.min.js"></script>
+        <script src="assets/js/core/bootstrap.min.js"></script>
+        <script src="assets/js/core/jquery.slimscroll.min.js"></script>
+        <script src="assets/js/core/jquery.scrollLock.min.js"></script>
+        <script src="assets/js/core/jquery.appear.min.js"></script>
+        <script src="assets/js/core/jquery.countTo.min.js"></script>
+        <script src="assets/js/core/jquery.placeholder.min.js"></script>
+
+        <!-- OneUI Core JS: AngularJS Related -->
+        <script src="assets/js/core/angular.min.js"></script>
+        <script src="assets/js/core/angular-ui-router.min.js"></script>
+        <script src="assets/js/core/angular-ui-bootstrap-tpls.min.js"></script>
+        <script src="assets/js/core/ocLazyLoad.min.js"></script>
+        <script src="assets/js/core/ngStorage.min.js"></script>
+        <script src="assets/js/core/moment.js"></script>
+        <script src="assets/js/core/datetimepicker.js"></script>
+        <script src="assets/js/core/datetimepicker.templates.js"></script>
+
+        <!-- OneUI Core JS: App Related -->
+        <script src="assets/js/app.js"></script>
+        <script src="assets/js/directives.js"></script>
+        <script src="assets/js/controllers.js"></script>
+        <!-- /build -->
+    </body>
+</html>
